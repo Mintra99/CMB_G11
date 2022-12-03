@@ -36,6 +36,10 @@ public class DTNHost implements Comparable<DTNHost> {
 	private List<NetworkInterface> net;
 	private ModuleCommunicationBus comBus;
 
+	private double halfDaySec = 129600; // in seconds
+
+	private double firstMessageTime = -1;
+
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
 		reset();
@@ -133,6 +137,9 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	private void setRouter(MessageRouter router) {
 		router.init(this, msgListeners);
+
+		System.out.println("HHHHHHHH");
+		System.out.println(msgListeners);
 		this.router = router;
 	}
 
@@ -453,6 +460,17 @@ public class DTNHost implements Comparable<DTNHost> {
 	 * {@link MessageRouter#receiveMessage(Message, DTNHost)}
 	 */
 	public int receiveMessage(Message m, DTNHost from) {
+		if (this.getNrofMessages() > 0) {
+			return MessageRouter.DENIED_NO_SPACE;
+		}
+		if (from.getInterfaces().get(0).getType() != NetworkInterface.STATIONARY_INTERFACE
+				&& from.firstMessageTime != -1
+				&& from.firstMessageTime + this.halfDaySec > SimClock.getIntTime()
+		) {
+//			System.out.println("Incubation period!!");
+			return MessageRouter.INCUBATION_PERIOD;
+		}
+
 		int retVal = this.router.receiveMessage(m, from);
 
 		if (retVal == MessageRouter.RCV_OK) {
@@ -536,6 +554,11 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	public int compareTo(DTNHost h) {
 		return this.getAddress() - h.getAddress();
+	}
+
+	public boolean isIncubated() {
+		return this.firstMessageTime != -1
+				&& this.firstMessageTime + this.halfDaySec > SimClock.getIntTime();
 	}
 
 }
