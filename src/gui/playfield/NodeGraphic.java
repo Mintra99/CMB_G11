@@ -81,7 +81,11 @@ public class NodeGraphic extends PlayFieldGraphic {
 						scale(range * 2));
 
 				// draw the "range" circle
-				g2.setColor(rangeColor);
+				if (node.getInterfaces().size() > 0) {
+					g2.setColor(node.getInterfaces().get(0).getRangeColor());
+				} else {
+					g2.setColor(rangeColor);
+				}
 				g2.draw(coverage);
 			}
 		}

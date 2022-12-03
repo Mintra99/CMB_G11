@@ -7,6 +7,7 @@ package core;
 import interfaces.ConnectivityGrid;
 import interfaces.ConnectivityOptimizer;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -71,6 +72,22 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	/** this interface's activeness jitter value */
 	private int activenessJitterValue;
 
+	public static final int STATIONARY_INTERFACE = 0;
+
+	/** coloring of group */
+	public static final String RANGE_COLOR = "rangeColor";
+
+	private Color rangeColor = Color.GREEN;
+
+	public int getType() {
+		return type;
+	}
+
+	private int type = -1;
+
+
+
+
 	static {
 		DTNSim.registerForReset(NetworkInterface.class.getCanonicalName());
 		reset();
@@ -94,6 +111,19 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.transmitSpeed = s.getInt(TRANSMIT_SPEED_S);
 		ensurePositiveValue(transmitRange, TRANSMIT_RANGE_S);
 		ensurePositiveValue(transmitSpeed, TRANSMIT_SPEED_S);
+
+		if (s.contains(RANGE_COLOR)) {
+			String t = s.getSetting(RANGE_COLOR);
+			System.out.println(t);
+			if (t.equals("red"))
+				this.rangeColor = Color.RED;
+			if (t.equals("blue"))
+				this.rangeColor = Color.BLUE;
+			if (t.equals("green"))
+				this.rangeColor = Color.GREEN;
+			if (t.equals("yellow"))
+				this.rangeColor = Color.YELLOW;
+		}
 	}
 
 	/**
@@ -116,6 +146,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.transmitSpeed = ni.transmitSpeed;
 		this.scanInterval = ni.scanInterval;
 		this.ah = ni.ah;
+		this.rangeColor = ni.rangeColor;
 
 		if (ni.activenessJitterMax > 0) {
 			this.activenessJitterValue = rng.nextInt(ni.activenessJitterMax);
@@ -189,6 +220,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	public String getInterfaceType() {
 		return interfacetype;
 	}
+
 
 	/**
 	 * For setting the connectionListeners
@@ -512,6 +544,15 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	public String toString() {
 		return this.address + " of " + this.host +
 			". Connections: " +	this.connections;
+	}
+
+	public Color getRangeColor() {
+		if (this.host.getNrofMessages() > 0) {
+			if (this.host.isIncubated())
+				return Color.ORANGE;
+			return Color.RED;
+		}
+		return rangeColor;
 	}
 
 }
