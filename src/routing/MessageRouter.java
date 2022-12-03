@@ -103,6 +103,8 @@ public abstract class MessageRouter {
 	/** applications attached to the host */
 	private HashMap<String, Collection<Application>> applications = null;
 
+	public static final int INCUBATION_PERIOD = 2;
+
 	/**
 	 * Constructor. Creates a new message router based on the settings in
 	 * the given Settings object. Size of the message buffer is read from
@@ -113,6 +115,7 @@ public abstract class MessageRouter {
 		this.bufferSize = Integer.MAX_VALUE; // defaults to rather large buffer
 		this.msgTtl = Message.INFINITE_TTL;
 		this.applications = new HashMap<String, Collection<Application>>();
+
 
 		if (s.contains(B_SIZE_S)) {
 			this.bufferSize = s.getLong(B_SIZE_S);
