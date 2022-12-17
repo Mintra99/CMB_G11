@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import movement.MovementModel;
-import movement.Path;
+import movement.*;
 import routing.MessageRouter;
 import routing.util.RoutingInfo;
 
@@ -559,6 +558,49 @@ public class DTNHost implements Comparable<DTNHost> {
 	public boolean isIncubated() {
 		return this.firstMessageTime != -1
 				&& this.firstMessageTime + this.halfDaySec > SimClock.getIntTime();
+	}
+
+	public String getLocationName(){
+		if (this.movement instanceof StudentDayMovement) {
+			StudentDayMovement sdm = (StudentDayMovement) this.movement;
+			SwitchableMovement sm = sdm.getModel();
+
+			if (sm instanceof LectureMovement) {
+				LectureMovement lm = (LectureMovement)sm;
+				for (int i = 0; i < lm.getAllLecture().size(); i++) {
+					Coord c = lm.getAllLecture().get(i);
+					if (this.location.distance(c) < 100) {
+						return "Lecture Hall " + i;
+					}
+				}
+			}
+
+			if (sm instanceof LibraryMovement) {
+				LibraryMovement lm = (LibraryMovement)sm;
+				for (int i = 0; i < lm.getAllLibraries().size(); i++) {
+					Coord c = lm.getAllLibraries().get(i);
+					if (this.location.distance(c) < 100) {
+						return "Library " + i;
+					}
+				}
+			}
+
+			if (sm instanceof SeminarMovement) {
+				SeminarMovement lm = (SeminarMovement)sm;
+				for (int i = 0; i < lm.getAllSeminars().size(); i++) {
+					Coord c = lm.getAllSeminars().get(i);
+					if (this.location.distance(c) < 100) {
+						return "Seminar " + i;
+					}
+				}
+			}
+
+			if (sm instanceof UbahnMovement) {
+				return "U-Bahn";
+			}
+		}
+
+		return "Walking Areas";
 	}
 
 }

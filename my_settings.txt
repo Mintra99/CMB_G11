@@ -3,11 +3,10 @@
 ### Scenario settings ###
 
 Scenario.name = FMI-Virus-Spread
-Scenario.endTime = 29k
-Scenario.updateInterval = 1
+Scenario.updateInterval = 0.1
+Scenario.endTime = 86k
 Scenario.simulateConnections = true
-Scenario.nrofHostGroups = 5
-MovementModel.worldSize = 2000, 1000
+Scenario.nrofHostGroups = 6
 Report.nrofReports = 0
 Events.nrof = 0
 
@@ -17,11 +16,14 @@ Events.nrof = 0
 ### Movement model settings ###
 
 MovementModel.worldSize = 1000, 1000
-
 MapBasedMovement.nrofMapFiles = 15
+
+# Main corridors
 MapBasedMovement.mapFile1 = data/FMI/ubahn_corridor.wkt
 MapBasedMovement.mapFile2 = data/FMI/main_corridor.wkt
 MapBasedMovement.mapFile3 = data/FMI/outside_corridor.wkt
+
+# Corridors leading from main corridor to seminar/lecture/library
 MapBasedMovement.mapFile4 = data/FMI/corridor_1.wkt
 MapBasedMovement.mapFile5 = data/FMI/corridor_2.wkt
 MapBasedMovement.mapFile6 = data/FMI/corridor_3.wkt
@@ -35,6 +37,55 @@ MapBasedMovement.mapFile13 = data/FMI/corridor_10.wkt
 MapBasedMovement.mapFile14 = data/FMI/corridor_11.wkt
 MapBasedMovement.mapFile15 = data/FMI/corridor_12.wkt
 
+##########################
+### Network Interfaces ###
+studentMaskInterface.type = DistanceCapacityInterface
+studentMaskInterface.transmitRange = 10
+studentMaskInterface.transmitSpeeds = 5k, 3k, 1k
+studentMaskInterface.rangeColor = green
+studentMaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+studentUnmaskInterface.type = DistanceCapacityInterface
+studentUnmaskInterface.transmitRange = 10
+studentUnmaskInterface.transmitSpeeds = 5k, 3k, 1k
+studentUnmaskInterface.rangeColor = yellow
+studentUnmaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+studentInfectedInterface.type = DistanceCapacityInterface
+studentInfectedInterface.transmitRange = 10
+studentInfectedInterface.transmitSpeeds = 5k, 3k, 1k
+studentInfectedInterface.rangeColor = red
+studentInfectedInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+lectureRoomInterface.type = DistanceCapacityInterface
+lectureRoomInterface.transmitRange = 20
+lectureRoomInterface.transmitSpeeds = 5k, 3k, 1k
+lectureRoomInterface.rangeColor = blue
+lectureRoomInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+libraryInterface.type = DistanceCapacityInterface
+libraryInterface.transmitRange = 40
+libraryInterface.transmitSpeeds = 5k, 3k, 1k
+libraryInterface.rangeColor = blue
+libraryInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+lectureHallInterface.type = DistanceCapacityInterface
+lectureHallInterface.transmitRange = 40
+lectureHallInterface.transmitSpeeds = 5k, 3k, 1k
+lectureHallInterface.rangeColor = blue
+lectureHallInterface.ubahnLocation = 970.2162664500242 749.1789063707361
+
+# Values that are not used but need
+studentMaskInterface.transmitSpeed = 1
+studentUnmaskInterface.transmitSpeed = 1
+studentInfectedInterface.transmitSpeed = 1
+lectureRoomInterface.transmitSpeed = 1
+lectureRoomInterface.interfaceType = stationary
+libraryInterface.transmitSpeed = 1
+libraryInterface.interfaceType = stationary
+lectureHallInterface.transmitSpeed = 1
+lectureHallInterface.interfaceType = stationary
+
 
 ##############
 ### Groups ###
@@ -44,17 +95,13 @@ MapBasedMovement.mapFile15 = data/FMI/corridor_12.wkt
 # Mobility model for all the nodes
 Group.movementModel = MapBasedMovement
 Group.router = EpidemicRouter
-EpidemicRouter.secondsInTimeUnit = 30
 # Buffer size of any node
 Group.bufferSize = 5M
 Group.nrofInterfaces = 1
 # Walking speeds
 Group.speed = 0.1, 1
-# Message TTL of 300 minutes (5 hours)
-# Group.msgTtl = 300
 
 # Student Day Parameters
-
 Group.lectureProb = 0.4
 Group.libraryProb = 0.3
 Group.ubahnProb = 0.5
@@ -68,13 +115,13 @@ Group.lectureSize = 100
 Group.lectureLocationsFile = data/FMI/lecture.wkt
 
 # Seminar Related Parameters
-Group.seminarLength = 2400, 4800
+Group.seminarLength = 1200, 2400
 Group.nrOfSeminars = 10
 Group.seminarSize = 30
 Group.seminarLocationsFile = data/FMI/seminar.wkt
 
 # Library Related Parameters
-Group.libraryLength = 2400, 4800
+Group.libraryLength = 600, 1200
 Group.nrOfLibraries = 1
 Group.librarySize = 100
 Group.libraryLocationsFile = data/FMI/library.wkt
@@ -95,74 +142,39 @@ Group2.movementModel = StudentDayMovement
 Group2.okMaps = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 Group2.interface1 = studentInfectedInterface
 
+## Group 3 Students in building without mask
+Group3.groupID = ST
+Group3.nrofHosts = 1
+Group3.movementModel = StudentDayMovement
+Group3.okMaps = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+Group3.interface1 = studentUnmaskInterface
+
 
 #Seminar-Room
-Group3.groupID = lr
-Group3.nrofHosts = 10
-Group3.nrofInterfaces = 1
-Group3.interface1 = lectureRoomInterface
-Group3.movementModel = SeminarMovement
-Group3.seminarLocationsFile = data/FMI/seminar.wkt
+Group4.groupID = lr
+Group4.nrofHosts = 10
+Group4.nrofInterfaces = 1
+Group4.movementModel = SeminarStationaryMovement
+Group4.seminarLocationsFile = data/FMI/seminar.wkt
+Group4.interface1 = lectureRoomInterface
 
 #Library
-Group4.groupID = lb
-Group4.nrofHosts = 1
-Group4.nrofInterfaces = 1
-Group4.interface1 = libraryInterface
-Group4.movementModel = LibraryMovement
-Group4.libraryLocationsFile = data/FMI/library.wkt
-
-#LectureHall
-Group5.groupID = lh
+Group5.groupID = lb
 Group5.nrofHosts = 1
 Group5.nrofInterfaces = 1
-Group5.interface1 = lectureHallInterface
-Group5.movementModel = LectureMovement
-Group5.lectureLocationsFile = data/FMI/lecture.wkt
+Group5.movementModel = LibraryStationaryMovement
+Group5.libraryLocationsFile = data/FMI/library.wkt
+Group5.interface1 = libraryInterface
 
-##########################
-### Network Interfaces ###
-studentMaskInterface.type = SimpleBroadcastInterface
-studentMaskInterface.transmitRange = 10
-studentMaskInterface.transmitSpeed = 250k
-studentMaskInterface.rangeColor = green
-studentMaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
-
-studentUnmaskInterface.type = SimpleBroadcastInterface
-studentUnmaskInterface.transmitRange = 10
-studentUnmaskInterface.transmitSpeed = 250k
-studentUnmaskInterface.rangeColor = yellow
-studentUnmaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
-
-studentInfectedInterface.type = SimpleBroadcastInterface
-studentInfectedInterface.transmitRange = 10
-studentInfectedInterface.transmitSpeed = 250k
-studentInfectedInterface.rangeColor = red
-studentInfectedInterface.ubahnLocation = 970.2162664500242 749.1789063707361
-
-lectureRoomInterface.type = SimpleBroadcastInterface
-lectureRoomInterface.transmitRange = 20
-lectureRoomInterface.transmitSpeed = 250k
-lectureRoomInterface.rangeColor = cyan
+#LectureHall
+Group6.groupID = lh
+Group6.nrofHosts = 1
+Group6.nrofInterfaces = 1
+Group6.movementModel = LectureStationaryMovement
+Group6.lectureLocationsFile = data/FMI/lecture.wkt
+Group6.interface1 = lectureHallInterface
 
 
-libraryInterface.type = SimpleBroadcastInterface
-libraryInterface.transmitRange = 40
-libraryInterface.transmitSpeed = 250k
-libraryInterface.rangeColor = cyan
-
-lectureHallInterface.type = SimpleBroadcastInterface
-lectureHallInterface.transmitRange = 40
-lectureHallInterface.transmitSpeed = 250k
-lectureHallInterface.rangeColor = cyan
-
-# Values that are not used but need
-lectureRoomInterface.transmitSpeeds = 1
-lectureRoomInterface.interfaceType = stationary
-libraryInterface.transmitSpeeds = 1
-libraryInterface.interfaceType = stationary
-lectureHallInterface.transmitSpeeds = 1
-lectureHallInterface.interfaceType = stationary
 
 ## GUI settings
 
@@ -174,4 +186,3 @@ GUI.UnderlayImage.offset = 0, 0
 GUI.UnderlayImage.scale = 1
 # Image rotation (radians)
 GUI.UnderlayImage.rotate = 0.015
-

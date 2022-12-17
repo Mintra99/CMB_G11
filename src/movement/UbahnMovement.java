@@ -5,7 +5,6 @@
 package movement;
 
 import java.util.List;
-import java.util.Random;
 
 import movement.map.DijkstraPathFinder;
 import movement.map.MapNode;
@@ -65,7 +64,6 @@ public class UbahnMovement extends MapBasedMovement implements
                 ubahnLocation = new Coord(xy[0], xy[1]).clone();
                 SimMap map = getMap();
                 Coord offset = map.getOffset();
-
                 if (map.isMirrored()){
                     ubahnLocation.setLocation(ubahnLocation.getX(), -ubahnLocation.getY());
                 }
@@ -135,7 +133,7 @@ public class UbahnMovement extends MapBasedMovement implements
             path.addWaypoint(c);
             return path;
         } else {
-            Path path = new Path(AT_UBAHN_MODE);
+            Path path = new Path(1);
             path.addWaypoint(lastWaypoint.clone());
             mode = READY_MODE;
             return path;
@@ -157,8 +155,8 @@ public class UbahnMovement extends MapBasedMovement implements
                 return Integer.MAX_VALUE;
             }
 
-            double minT = WAIT_15_MIN * 4 * 12;
-            double maxT = WAIT_15_MIN * 4 * 16;
+            double minT = WAIT_15_MIN * 4 * 12; // 12 hours
+            double maxT = WAIT_15_MIN * 4 * 16; // 16 hours
             double sleep = (maxT - minT) * rng.nextDouble() + minT;
             return base + sleep;
         } else {
@@ -170,8 +168,6 @@ public class UbahnMovement extends MapBasedMovement implements
     public MapBasedMovement replicate() {
         return new UbahnMovement(this);
     }
-
-
 
     /**
      * @see SwitchableMovement

@@ -24,19 +24,25 @@ public class LibraryMovement extends MapBasedMovement implements
 
     public static final String LIBRARY_LENGTH = "libraryLength";
     public static final String NR_OF_LIBRARY = "nrOfLibraries";
+    public static final String LIBRARY_SIZE = "librarySize";
     public static final String LIBRARY_LOCATION_FILE = "libraryLocationsFile";
 
-    private int mode;
-    private static int nrOfLectures = 1;
-    private int startedWorkTime;
-    private int[] lectureLength;
-    private DijkstraPathFinder pathFinder;
-    private int distance;
-    private Coord lastWaypoint;
-    private List<Coord> allLibrary;
-    private Coord libaryLocation;
-    private boolean ready;
+
+    private static int nrOfLibraries = 1;
+    //7private double minWaitTime;
+    //private double maxWaitTime;
+    private int[] libraryLength;
+    private List<Coord> allLibraries;
     private double specificWaitTime;
+    private int startedWorkTime;
+
+    private boolean ready;
+    private int mode;
+    private int distance;
+    //private double libraryWaitTimeParetoCoeff;
+    private DijkstraPathFinder pathFinder;
+    private Coord lastWaypoint;
+    private Coord libraryLocation;
 
     /**
      * Creates a UbahnMovement
@@ -45,28 +51,46 @@ public class LibraryMovement extends MapBasedMovement implements
     public LibraryMovement(Settings settings) {
         super(settings);
 
+        libraryLength = settings.getCsvInts(LIBRARY_LENGTH);
+        nrOfLibraries = settings.getInt(NR_OF_LIBRARY);
+
+        distance = settings.getInt(LIBRARY_SIZE);
+
+        startedWorkTime = -1;
+        pathFinder = new DijkstraPathFinder(null);
+        mode = TO_LIBRARY_MODE;
+
         String libraryLocationFile = null;
         try {
             libraryLocationFile = settings.getSetting(LIBRARY_LOCATION_FILE);
         } catch (Throwable t) {
             System.out.println("Catch library");
         }
+        if (libraryLocationFile==null) {
+            MapNode[] mapNodes = (MapNode[])getMap().getNodes().
+                    toArray(new MapNode[0]);
+            int officeIndex = rng.nextInt(mapNodes.length - 1) /
+                    (mapNodes.length/ nrOfLibraries);
+            libraryLocation = mapNodes[officeIndex].getLocation().clone();
+        } else {
+            try {
+                allLibraries = new LinkedList<Coord>();
+                List<Coord> locationRead = (new WKTReader()).readPoints(new File(libraryLocationFile));
+                MapBasedMovement tmp = new MapBasedMovement(settings);
 
-        try {
-            allLibrary = new LinkedList<Coord>();
-            List<Coord> locationRead = (new WKTReader()).readPoints(new File(libraryLocationFile));
-            MapBasedMovement tmp = new MapBasedMovement(settings);
-
-            for (Coord coord : locationRead){
-                SimMap map = tmp.getMap();
-                if (map.isMirrored()){
-                    coord.setLocation(coord.getX(), -coord.getY());
+                for (Coord coord : locationRead) {
+                    SimMap map = tmp.getMap();
+                    Coord offset = map.getOffset();
+                    if (map.isMirrored()) {
+                        coord.setLocation(coord.getX(), -coord.getY());
+                    }
+                    coord.translate(offset.getX(), offset.getY());
+                    allLibraries.add(coord);
                 }
-                System.out.println("lib coord:" + coord);
-                allLibrary.add(coord);
+                libraryLocation = allLibraries.get(rng.nextInt(allLibraries.size())).clone();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -77,26 +101,21 @@ public class LibraryMovement extends MapBasedMovement implements
 
     public LibraryMovement(LibraryMovement proto) {
         super(proto);
-        this.libaryLocation = proto.libaryLocation;
         this.mode = proto.mode;
         this.distance = proto.distance;
         this.pathFinder = proto.pathFinder;
-        this.lectureLength = proto.lectureLength;
+        this.libraryLength = proto.libraryLength;
         startedWorkTime = -1;
 
-        if (proto.allLibrary == null){
+        if (proto.allLibraries == null){
             MapNode[] mapNodes = (MapNode[])getMap().getNodes().toArray(new MapNode[0]);
-            int index = rng.nextInt(mapNodes.length - 1) / (mapNodes.length/nrOfLectures);
-            libaryLocation = mapNodes[index].getLocation().clone();
+            int index = rng.nextInt(mapNodes.length - 1) / (mapNodes.length/nrOfLibraries);
+            libraryLocation = mapNodes[index].getLocation().clone();
         } else {
-            this.allLibrary = proto.allLibrary;
-            libaryLocation = allLibrary.get(rng.nextInt(allLibrary.size())).clone();
+            this.allLibraries = proto.allLibraries;
+            libraryLocation = allLibraries.get(rng.nextInt(allLibraries.size())).clone();
         }
-
-        minWaitTime = proto.minWaitTime;
-        maxWaitTime = proto.maxWaitTime;
-
-
+        //libraryWaitTimeParetoCoeff = proto.libraryWaitTimeParetoCoeff;
     }
 
     @Override
@@ -117,32 +136,14 @@ public class LibraryMovement extends MapBasedMovement implements
                 return null;
             }
             MapNode thisNode = map.getNodeByCoord(lastWaypoint);
-            MapNode destinationNode = map.getNodeByCoord(libaryLocation);
+            MapNode destinationNode = map.getNodeByCoord(libraryLocation);
             List<MapNode> nodes = pathFinder.getShortestPath(thisNode, destinationNode);
             Path path = new Path(generateSpeed());
             for (MapNode node : nodes) {
                 path.addWaypoint(node.getLocation());
             }
-            lastWaypoint = libaryLocation.clone();
+            lastWaypoint = libraryLocation.clone();
             mode = AT_LIBRARY_MODE;
-
-            double new_x = lastWaypoint.getX() + (rng.nextDouble() - 0.5) * distance;
-            double new_y = lastWaypoint.getY() + (rng.nextDouble() - 0.5) * distance;
-
-            if (new_x > getMaxX()){
-                new_x = getMaxX();
-            } else if (new_x < getMaxX()){
-                new_x = 0;
-            }
-
-            if (new_y > getMaxY()){
-                new_y = getMaxY();
-            } else if (new_y < getMaxY()){
-                new_y = 0;
-            }
-
-            Coord c = new Coord(new_x, new_y);
-            path.addWaypoint(c);
             return path;
         }
         if (startedWorkTime == -1){
@@ -157,16 +158,44 @@ public class LibraryMovement extends MapBasedMovement implements
         return null;
     }
 
+    @Override
+    protected double generateWaitTime() {
+        int lower = libraryLength[0];
+        int upper = libraryLength[1];
+
+        specificWaitTime = (upper - lower) * rng.nextDouble() + lower;
+        return specificWaitTime;
+    }
+
 
     @Override
     public MapBasedMovement replicate() {
         return new LibraryMovement(this);
     }
-
-    public Coord getLibraryLocation() {
-        return libaryLocation.clone();
+    /**
+     * @see SwitchableMovement
+     */
+    public Coord getLastLocation() {
+        return lastWaypoint.clone();
     }
 
-    public double nextPathAvailable() { return Double.MAX_VALUE;}
+    /**
+     * @see SwitchableMovement
+     */
+
+    public void setLocation(Coord lastWaypoint) {
+        this.lastWaypoint = lastWaypoint.clone();
+        startedWorkTime = -1;
+        ready = false;
+        mode = TO_LIBRARY_MODE;
+    }
+    public boolean isReady() {
+        return ready;
+    }
+
+    public Coord getLibraryLocation() {
+        return libraryLocation.clone();
+    }
+    public List<Coord> getAllLibraries() { return this.allLibraries; }
 
 }

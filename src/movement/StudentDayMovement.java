@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2010 Aalto University, ComNet
  * Released under GPLv3. See LICENSE.txt for details.
@@ -8,7 +9,6 @@ import core.Coord;
 import core.Settings;
 
 /**
- *
  * This movement model makes use of several other movement models to simulate
  * movement with daily routines. People wake up in the morning, go to work,
  * go shopping or similar activities in the evening and finally go home to
@@ -28,8 +28,6 @@ public class StudentDayMovement extends ExtendedMovementModel {
     private LibraryMovement libraryMovement;
     private SeminarMovement seminarMovement;
 
-    private TransportMovement movementUsedForTransfers;
-
     private static final int UBAHN_MODE = 0;
     private static final int LECTURE_MODE = 1;
     private static final int LIBRARY_MODE = 2;
@@ -45,8 +43,10 @@ public class StudentDayMovement extends ExtendedMovementModel {
     private double toLectureProb;
     private double toSeminarProb;
     private double toUbahnProb;
-
     private double toLibraryProb;
+
+    private StudentWalkMovement SWmm;
+    private TransportMovement movementUsedForTransfers;
 
     /**
      * Creates a new instance of WorkingDayMovement
@@ -63,6 +63,9 @@ public class StudentDayMovement extends ExtendedMovementModel {
         toSeminarProb = settings.getDouble(PROBABILITY_TO_SEMINAR_SETTING);
         toUbahnProb = settings.getDouble(PROBABILITY_TO_UBAHN_SETTING);
         toLibraryProb = settings.getDouble(PROBABILITY_TO_LIBRARY_SETTING);
+
+        SWmm = new StudentWalkMovement(settings);
+        movementUsedForTransfers = SWmm;
 
         setCurrentMovementModel(ubahnMovement);
         mode = UBAHN_MODE;
@@ -83,6 +86,9 @@ public class StudentDayMovement extends ExtendedMovementModel {
         toLibraryProb = proto.toLibraryProb;
         toSeminarProb = proto.toSeminarProb;
 
+        SWmm = new StudentWalkMovement(proto.SWmm);
+        movementUsedForTransfers = SWmm;
+
         setCurrentMovementModel(ubahnMovement);
         mode = proto.mode;
     }
@@ -98,12 +104,12 @@ public class StudentDayMovement extends ExtendedMovementModel {
                                 ubahnMovement.getUBahnLocation(),
                                 lectureMovement.getLectureLocation());
                         mode = TO_LECTURE;
-                    } else if(toSeminarProb > rng.nextDouble()){
+                    } else if (toSeminarProb > rng.nextDouble()){
                         movementUsedForTransfers.setNextRoute(
                                 ubahnMovement.getUBahnLocation(),
                                 seminarMovement.getSeminarLocation());
                         mode = TO_SEMINAR;
-                    } else{
+                    } else {
                         movementUsedForTransfers.setNextRoute(
                                 ubahnMovement.getUBahnLocation(),
                                 libraryMovement.getLibraryLocation());
@@ -174,6 +180,30 @@ public class StudentDayMovement extends ExtendedMovementModel {
                     }
                 }
                 break;
+            case TO_LECTURE:
+                if (movementUsedForTransfers.isReady()){
+                    setCurrentMovementModel(lectureMovement);
+                    mode = LECTURE_MODE;
+                }
+                break;
+            case TO_LIBRARY:
+                if (movementUsedForTransfers.isReady()){
+                    setCurrentMovementModel(libraryMovement);
+                    mode = LIBRARY_MODE;
+                }
+                break;
+            case TO_SEMINAR:
+                if (movementUsedForTransfers.isReady()){
+                    setCurrentMovementModel(seminarMovement);
+                    mode = SEMINAR_MODE;
+                }
+                break;
+            case TO_UBAHN:
+                if (movementUsedForTransfers.isReady()){
+                    setCurrentMovementModel(ubahnMovement);
+                    mode = UBAHN_MODE;
+                }
+                break;
             default:
                 break;
         }
@@ -188,9 +218,7 @@ public class StudentDayMovement extends ExtendedMovementModel {
     }
 
     @Override
-    public MovementModel replicate() {
-        return new StudentDayMovement(this);
-    }
+    public MovementModel replicate() {return new StudentDayMovement(this);}
 
     public SwitchableMovement getModel() {return this.getCurrentMovementModel(); }
 

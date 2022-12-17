@@ -5,9 +5,7 @@
 package movement;
 
 import java.util.List;
-import java.util.Random;
 import java.util.LinkedList;
-import java.util.List;
 import java.io.File;
 
 import core.SimClock;
@@ -41,11 +39,8 @@ public class SeminarMovement extends MapBasedMovement implements
     public static final String SEMINAR_LOCATION_FILE = "seminarLocationsFile";
 
     private static int nrOfSeminars = 10;
-    private static final int WAIT_15_MIN = 900;
     private double minWaitTime;
     private double maxWaitTime;
-
-
     private int[] seminarLength;
     private List<Coord> allSeminars;
     private double specificWaitTime;
@@ -55,11 +50,11 @@ public class SeminarMovement extends MapBasedMovement implements
     private int mode;
 
     private int distance;
+    private double seminarWaitTimeParetoCoeff;
     private DijkstraPathFinder pathFinder;
     private Coord lastWaypoint;
     private Coord seminarLocation;
 
-    private boolean atDesk;
 
     /**
      * Creates a UbahnMovement
@@ -71,6 +66,8 @@ public class SeminarMovement extends MapBasedMovement implements
         seminarLength = settings.getCsvInts(SEMINAR_LENGTH);
         nrOfSeminars = settings.getInt(NR_OF_SEMINARS);
 
+        distance = settings.getInt(SEMINAR_SIZE);
+
         startedWorkTime = -1;
         pathFinder = new DijkstraPathFinder(null);
         mode = TO_SEMINAR_MODE;
@@ -81,25 +78,32 @@ public class SeminarMovement extends MapBasedMovement implements
         } catch (Throwable t){
             System.out.println("Catch seminar");
         }
+        if (seminarLocationFile==null) {
+            MapNode[] mapNodes = (MapNode[])getMap().getNodes().
+                    toArray(new MapNode[0]);
+            int officeIndex = rng.nextInt(mapNodes.length - 1) /
+                    (mapNodes.length/ nrOfSeminars);
+            seminarLocation = mapNodes[officeIndex].getLocation().clone();
+        } else {
+            try {
+                allSeminars = new LinkedList<Coord>();
+                List<Coord> locationRead = (new WKTReader()).readPoints(new File(seminarLocationFile));
+                MapBasedMovement tmp = new MapBasedMovement(settings);
 
-        try{
-            allSeminars = new LinkedList<Coord>();
-            List<Coord> locationRead = (new WKTReader()).readPoints(new File(seminarLocationFile));
-            MapBasedMovement tmp = new MapBasedMovement(settings);
-
-            for (Coord coord : locationRead){
-                SimMap map = tmp.getMap();
-                if (map.isMirrored()){
-                    coord.setLocation(coord.getX(), -coord.getY());
+                for (Coord coord : locationRead) {
+                    SimMap map = tmp.getMap();
+                    Coord offset = map.getOffset();
+                    if (map.isMirrored()) {
+                        coord.setLocation(coord.getX(), -coord.getY());
+                    }
+                    coord.translate(offset.getX(), offset.getY());
+                    allSeminars.add(coord);
                 }
-                System.out.println("seminar coord:" + coord);
-                allSeminars.add(coord);
+                seminarLocation = allSeminars.get(rng.nextInt(allSeminars.size())).clone();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        seminarLocation = allSeminars.get(rng.nextInt(allSeminars.size())).clone();
-        } catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 
     /**
@@ -108,7 +112,6 @@ public class SeminarMovement extends MapBasedMovement implements
      */
     public SeminarMovement(SeminarMovement proto) {
         super(proto);
-        this.seminarLocation = proto.seminarLocation;
         this.mode = proto.mode;
         this.distance = proto.distance;
         this.pathFinder = proto.pathFinder;
@@ -123,9 +126,9 @@ public class SeminarMovement extends MapBasedMovement implements
             this.allSeminars = proto.allSeminars;
             seminarLocation = allSeminars.get(rng.nextInt(allSeminars.size())).clone();
         }
-
-        minWaitTime = proto.minWaitTime;
-        maxWaitTime = proto.maxWaitTime;
+        //seminarWaitTimeParetoCoeff = proto.seminarWaitTimeParetoCoeff;
+        //minWaitTime = proto.minWaitTime;
+        //maxWaitTime = proto.maxWaitTime;
     }
 
     @Override
@@ -154,24 +157,6 @@ public class SeminarMovement extends MapBasedMovement implements
             }
             lastWaypoint = seminarLocation.clone();
             mode = AT_SEMINAR_MODE;
-
-            double new_x = lastWaypoint.getX() + (rng.nextDouble() - 0.5) * distance;
-            double new_y = lastWaypoint.getY() + (rng.nextDouble() - 0.5) * distance;
-
-            if (new_x > getMaxX()){
-                new_x = getMaxX();
-            } else if (new_x < getMaxX()){
-                new_x = 0;
-            }
-
-            if (new_y > getMaxY()){
-                new_y = getMaxY();
-            } else if (new_y < getMaxY()){
-                new_y = 0;
-            }
-
-            Coord c = new Coord(new_x, new_y);
-            path.addWaypoint(c);
             return path;
         }
         if (startedWorkTime == -1){
@@ -200,17 +185,11 @@ public class SeminarMovement extends MapBasedMovement implements
 
 
     @Override
-    public MapBasedMovement replicate() {
-        return new SeminarMovement(this);
-    }
-
-
+    public MapBasedMovement replicate() {return new SeminarMovement(this);}
     /**
      * @see SwitchableMovement
      */
-    public Coord getLastLocation() {
-        return lastWaypoint.clone();
-    }
+    public Coord getLastLocation() {return lastWaypoint.clone();}
 
     /**
      * @see SwitchableMovement
@@ -225,13 +204,9 @@ public class SeminarMovement extends MapBasedMovement implements
     /**
      * @see SwitchableMovement
      */
-    public boolean isReady() {
-        return ready;
-    }
+    public boolean isReady() {return ready;}
 
-    public Coord getSeminarLocation() {
-        return seminarLocation.clone();
-    }
+    public Coord getSeminarLocation() {return seminarLocation.clone();}
 
     public List<Coord> getAllSeminars() {return this.allSeminars;}
 

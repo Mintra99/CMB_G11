@@ -36,13 +36,10 @@ public class LectureMovement extends MapBasedMovement implements
 
     public static final String lECTURE_LENGTH = "lectureLength";
     public static final String NR_OF_LECTURES = "nrOfLectures";
+    public static final String LECTURE_SIZE = "lectureSize";
     public static final String LECTURE_LOCATION_FILE = "lectureLocationsFile";
 
     private static int nrOfLecture = 1;
-    private static final int WAIT_15_MIN = 900;
-    private double minWaitTime;
-    private double maxWaitTime;
-
 
     private int[] lectureLength;
     private List<Coord> allLectures;
@@ -53,6 +50,7 @@ public class LectureMovement extends MapBasedMovement implements
     private int mode;
 
     private int distance;
+    //private double lectureWaitTimeParetoCoeff;
     private DijkstraPathFinder pathFinder;
     private Coord lastWaypoint;
     private Coord lectureLocation;
@@ -67,6 +65,8 @@ public class LectureMovement extends MapBasedMovement implements
         lectureLength = settings.getCsvInts(lECTURE_LENGTH);
         nrOfLecture = settings.getInt(NR_OF_LECTURES);
 
+        distance = settings.getInt(LECTURE_SIZE);
+
         startedWorkTime = -1;
         pathFinder = new DijkstraPathFinder(null);
         mode = TO_LECTURE_MODE;
@@ -77,23 +77,30 @@ public class LectureMovement extends MapBasedMovement implements
         } catch (Throwable t){
             System.out.println("Catch lecture");
         }
-
-        try{
-            allLectures = new LinkedList<Coord>();
-            List<Coord> locationRead = (new WKTReader()).readPoints(new File(lectureLocationFile));
-            for (Coord coord : locationRead){
-                SimMap map = getMap();
-                Coord offset = map.getOffset();
-                if (map.isMirrored()){
-                    coord.setLocation(coord.getX(), -coord.getY());
+        if (lectureLocationFile==null) {
+            MapNode[] mapNodes = (MapNode[])getMap().getNodes().
+                    toArray(new MapNode[0]);
+            int officeIndex = rng.nextInt(mapNodes.length - 1) /
+                    (mapNodes.length/ nrOfLecture);
+            lectureLocation = mapNodes[officeIndex].getLocation().clone();
+        } else {
+            try {
+                allLectures = new LinkedList<Coord>();
+                List<Coord> locationRead = (new WKTReader()).readPoints(new File(lectureLocationFile));
+                for (Coord coord : locationRead) {
+                    SimMap map = getMap();
+                    Coord offset = map.getOffset();
+                    if (map.isMirrored()) {
+                        coord.setLocation(coord.getX(), -coord.getY());
+                    }
+                    coord.translate(offset.getX(), offset.getY());
+                    allLectures.add(coord);
                 }
-                allLectures.add(coord);
+                lectureLocation = allLectures.get(rng.nextInt(allLectures.size())).clone();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            lectureLocation = allLectures.get(rng.nextInt(allLectures.size())).clone();
-        } catch (Exception e){
-            e.printStackTrace();
         }
-
     }
 
     /**
@@ -102,7 +109,6 @@ public class LectureMovement extends MapBasedMovement implements
      */
     public LectureMovement(LectureMovement proto) {
         super(proto);
-        this.lectureLocation = proto.lectureLocation;
         this.mode = proto.mode;
         this.distance = proto.distance;
         this.pathFinder = proto.pathFinder;
@@ -117,9 +123,7 @@ public class LectureMovement extends MapBasedMovement implements
             this.allLectures = proto.allLectures;
             lectureLocation = allLectures.get(rng.nextInt(allLectures.size())).clone();
         }
-
-        minWaitTime = proto.minWaitTime;
-        maxWaitTime = proto.maxWaitTime;
+        //lectureWaitTimeParetoCoeff = proto.lectureWaitTimeParetoCoeff;
     }
 
     @Override
@@ -152,24 +156,6 @@ public class LectureMovement extends MapBasedMovement implements
             }
             lastWaypoint = lectureLocation.clone();
             mode = AT_LECTURE_MODE;
-
-            double new_x = lastWaypoint.getX() + (rng.nextDouble() - 0.5) * distance;
-            double new_y = lastWaypoint.getY() + (rng.nextDouble() - 0.5) * distance;
-
-            if (new_x > getMaxX()){
-                new_x = getMaxX();
-            } else if (new_x < getMaxX()){
-                new_x = 0;
-            }
-
-            if (new_y > getMaxY()){
-                new_y = getMaxY();
-            } else if (new_y < getMaxY()){
-                new_y = 0;
-            }
-
-            Coord c = new Coord(new_x, new_y);
-            path.addWaypoint(c);
             return path;
         }
         if (startedWorkTime == -1){
@@ -195,17 +181,11 @@ public class LectureMovement extends MapBasedMovement implements
 
 
     @Override
-    public MapBasedMovement replicate() {
-        return new LectureMovement(this);
-    }
-
-
+    public MapBasedMovement replicate() {return new LectureMovement(this);}
     /**
      * @see SwitchableMovement
      */
-    public Coord getLastLocation() {
-        return lastWaypoint.clone();
-    }
+    public Coord getLastLocation() {return lastWaypoint.clone();}
 
     /**
      * @see SwitchableMovement
@@ -220,13 +200,9 @@ public class LectureMovement extends MapBasedMovement implements
     /**
      * @see SwitchableMovement
      */
-    public boolean isReady() {
-        return ready;
-    }
+    public boolean isReady() {return ready;}
 
-    public Coord getLectureLocation() {
-        return lectureLocation.clone();
-    }
+    public Coord getLectureLocation() {return lectureLocation.clone();}
 
     public List<Coord> getAllLecture() {return this.allLectures;}
 

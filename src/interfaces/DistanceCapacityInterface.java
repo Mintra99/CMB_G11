@@ -96,7 +96,7 @@ public class DistanceCapacityInterface extends NetworkInterface {
 		}
 		// Then find new possible connections
 		Collection<NetworkInterface> interfaces =
-			optimizer.getNearInterfaces(this);
+				optimizer.getNearInterfaces(this);
 		for (NetworkInterface i : interfaces) {
 			connect(i);
 		}

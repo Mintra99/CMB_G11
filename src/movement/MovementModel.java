@@ -77,7 +77,7 @@ public abstract class MovementModel {
 	 * @param max The maximum setting
 	 */
 	private static void checkMinAndMaxSetting(String name,
-		double min, double max) {
+											  double min, double max) {
 		if (min < 0 || max < 0) {
 			throw new SimError("MovementModel." + name + " (in Settings)" +
 					" has a value less than zero ("+min+", "+max+")");
@@ -191,7 +191,7 @@ public abstract class MovementModel {
 			return 0;
 		}
 		return (maxWaitTime - minWaitTime) * rng.nextDouble() +
-			minWaitTime;
+				minWaitTime;
 	}
 
 	/**
