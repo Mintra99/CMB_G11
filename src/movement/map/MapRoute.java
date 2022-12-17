@@ -166,7 +166,8 @@ public class MapRoute {
 				}
 				nodes.add(node);
 			}
-
+			System.out.println("Nodes: ");
+			System.out.println(nodes);
 			routes.add(new MapRoute(type, nodes));
 		}
 

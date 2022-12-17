@@ -82,6 +82,7 @@ public class MapRouteMovement extends MapBasedMovement implements
 	 * @param proto The MapRouteMovement prototype
 	 */
 	protected MapRouteMovement(MapRouteMovement proto) {
+
 		super(proto);
 		this.route = proto.allRoutes.get(proto.nextRouteIndex).replicate();
 		this.firstStopIndex = proto.firstStopIndex;
@@ -154,6 +155,8 @@ public class MapRouteMovement extends MapBasedMovement implements
 	 * @return The list of stops
 	 */
 	public List<MapNode> getStops() {
+		System.out.println(route.getStops());
+
 		return route.getStops();
 	}
 }

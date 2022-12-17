@@ -12,13 +12,27 @@ import core.Settings;
  */
 public class EpidemicRouter extends ActiveRouter {
 
+	// Odds of virus spreading
+	public static final double TRANSMISSION_ODDS = 0.25;
+
+	public static final String SECONDS_IN_UNIT_S ="secondsInTimeUnit";
+
+	public static final String EPIDEMIC_NS = "EpidemicRouter";
 	/**
 	 * Constructor. Creates a new message router based on the settings in
 	 * the given Settings object.
 	 * @param s The settings object
 	 */
+
+	private int secondsInTimeUnit;
 	public EpidemicRouter(Settings s) {
 		super(s);
+		Settings epidemicSettings = new Settings(EPIDEMIC_NS);
+		secondsInTimeUnit = epidemicSettings.getInt(SECONDS_IN_UNIT_S);
+
+		System.out.println("EPI");
+		System.out.println(secondsInTimeUnit);
+
 		//TODO: read&use epidemic router specific settings (if any)
 	}
 
@@ -28,6 +42,7 @@ public class EpidemicRouter extends ActiveRouter {
 	 */
 	protected EpidemicRouter(EpidemicRouter r) {
 		super(r);
+		this.secondsInTimeUnit = r.secondsInTimeUnit;
 		//TODO: copy epidemic settings here (if any)
 	}
 

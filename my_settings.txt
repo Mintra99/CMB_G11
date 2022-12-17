@@ -1,205 +1,168 @@
+
+#########################
+### Scenario settings ###
+
 Scenario.name = FMI-Virus-Spread
 Scenario.endTime = 29k
 Scenario.updateInterval = 1
 Scenario.simulateConnections = true
-Scenario.nrofHostGroups = 14
-MovementModel.worldSize = 1000, 1000
+Scenario.nrofHostGroups = 5
+MovementModel.worldSize = 2000, 1000
 Report.nrofReports = 0
 Events.nrof = 0
 
 
-Group1.groupID = st
+
+###############################
+### Movement model settings ###
+
+MovementModel.worldSize = 1000, 1000
+
+MapBasedMovement.nrofMapFiles = 15
+MapBasedMovement.mapFile1 = data/FMI/ubahn_corridor.wkt
+MapBasedMovement.mapFile2 = data/FMI/main_corridor.wkt
+MapBasedMovement.mapFile3 = data/FMI/outside_corridor.wkt
+MapBasedMovement.mapFile4 = data/FMI/corridor_1.wkt
+MapBasedMovement.mapFile5 = data/FMI/corridor_2.wkt
+MapBasedMovement.mapFile6 = data/FMI/corridor_3.wkt
+MapBasedMovement.mapFile7 = data/FMI/corridor_4.wkt
+MapBasedMovement.mapFile8 = data/FMI/corridor_5.wkt
+MapBasedMovement.mapFile9 = data/FMI/corridor_6.wkt
+MapBasedMovement.mapFile10 = data/FMI/corridor_7.wkt
+MapBasedMovement.mapFile11 = data/FMI/corridor_8.wkt
+MapBasedMovement.mapFile12 = data/FMI/corridor_9.wkt
+MapBasedMovement.mapFile13 = data/FMI/corridor_10.wkt
+MapBasedMovement.mapFile14 = data/FMI/corridor_11.wkt
+MapBasedMovement.mapFile15 = data/FMI/corridor_12.wkt
+
+
+##############
+### Groups ###
+
+## Common settings for all groups
+
+# Mobility model for all the nodes
+Group.movementModel = MapBasedMovement
+Group.router = EpidemicRouter
+EpidemicRouter.secondsInTimeUnit = 30
+# Buffer size of any node
+Group.bufferSize = 5M
+Group.nrofInterfaces = 1
+# Walking speeds
+Group.speed = 0.1, 1
+# Message TTL of 300 minutes (5 hours)
+# Group.msgTtl = 300
+
+# Student Day Parameters
+
+Group.lectureProb = 0.4
+Group.libraryProb = 0.3
+Group.ubahnProb = 0.5
+Group.seminarProb = 0.6
+Group.ubahnLocation = 970.2162664500242, 749.1789063707361
+
+# Lecture Related Parameters
+Group.lectureLength = 2400, 4800
+Group.nrOfLectures = 1
+Group.lectureSize = 100
+Group.lectureLocationsFile = data/FMI/lecture.wkt
+
+# Seminar Related Parameters
+Group.seminarLength = 2400, 4800
+Group.nrOfSeminars = 10
+Group.seminarSize = 30
+Group.seminarLocationsFile = data/FMI/seminar.wkt
+
+# Library Related Parameters
+Group.libraryLength = 2400, 4800
+Group.nrOfLibraries = 1
+Group.librarySize = 100
+Group.libraryLocationsFile = data/FMI/library.wkt
+
+
+## Group 1 Students in building with masks
+Group1.groupID = ST
 Group1.nrofHosts = 2
-Group1.nrofInterfaces = 1
+Group1.movementModel = StudentDayMovement
+Group1.okMaps = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 Group1.interface1 = studentMaskInterface
-Group1.movementModel = MapRouteMovement
-Group1.routeType = 1
-Group1.router = PassiveRouter
 
-Group14.groupID = st
-Group14.nrofHosts = 2
-Group14.nrofInterfaces = 1
-Group14.interface1 = studentInfectedInterface
-Group14.movementModel = MapRouteMovement
-Group14.routeType = 1
-Group14.router = PassiveRouter
 
-#Seminar-Room-1
-Group2.groupID = lr
+## Group 2 Students in building infected
+Group2.groupID = ST
 Group2.nrofHosts = 1
-Group2.nrofInterfaces = 1
-Group2.interface1 = lectureRoomInterface
-Group2.movementModel = StationaryMovement
-Group2.classLocationsFile = data/FMI/building_paths.wkt
-Group2.nodeLocation = 220, 220
-Group2.routeType = 1
-Group2.router = PassiveRouter
+Group2.movementModel = StudentDayMovement
+Group2.okMaps = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+Group2.interface1 = studentInfectedInterface
 
-#Seminar-Room-2
+
+#Seminar-Room
 Group3.groupID = lr
-Group3.nrofHosts = 1
+Group3.nrofHosts = 10
 Group3.nrofInterfaces = 1
 Group3.interface1 = lectureRoomInterface
-Group3.movementModel = StationaryMovement
-Group3.classLocationsFile = data/FMI/building_paths.wkt
-Group3.nodeLocation = 288, 230
-Group3.routeType = 1
-Group3.router = PassiveRouter
-
-#Seminar-Room-3
-Group4.groupID = lr
-Group4.nrofHosts = 1
-Group4.nrofInterfaces = 1
-Group4.interface1 = lectureRoomInterface
-Group4.movementModel = StationaryMovement
-Group4.classLocationsFile = data/FMI/building_paths.wkt
-Group4.nodeLocation = 353, 250
-Group4.routeType = 1
-Group4.router = PassiveRouter
-
-#Seminar-Room-4
-Group5.groupID = lr
-Group5.nrofHosts = 1
-Group5.nrofInterfaces = 1
-Group5.interface1 = lectureRoomInterface
-Group5.movementModel = StationaryMovement
-Group5.classLocationsFile = data/FMI/building_paths.wkt
-Group5.nodeLocation = 418, 260
-Group5.routeType = 1
-Group5.router = PassiveRouter
-
-
-#Seminar-Room-5
-Group6.groupID = lr
-Group6.nrofHosts = 1
-Group6.nrofInterfaces = 1
-Group6.interface1 = lectureRoomInterface
-Group6.movementModel = StationaryMovement
-Group6.classLocationsFile = data/FMI/building_paths.wkt
-Group6.nodeLocation = 489, 275
-Group6.routeType = 1
-Group6.router = PassiveRouter
-
-
-
-#Seminar-Room-6
-Group7.groupID = lr
-Group7.nrofHosts = 1
-Group7.nrofInterfaces = 1
-Group7.interface1 = lectureRoomInterface
-Group7.movementModel = StationaryMovement
-Group7.classLocationsFile = data/FMI/building_paths.wkt
-Group7.nodeLocation = 528, 605
-Group7.routeType = 1
-Group7.router = PassiveRouter
-
-#Seminar-Room-7
-Group8.groupID = lr
-Group8.nrofHosts = 1
-Group8.nrofInterfaces = 1
-Group8.interface1 = lectureRoomInterface
-Group8.movementModel = StationaryMovement
-Group8.classLocationsFile = data/FMI/building_paths.wkt
-Group8.nodeLocation = 465, 592
-Group8.routeType = 1
-Group8.router = PassiveRouter
-
-#Seminar-Room-8
-Group9.groupID = lr
-Group9.nrofHosts = 1
-Group9.nrofInterfaces = 1
-Group9.interface1 = lectureRoomInterface
-Group9.movementModel = StationaryMovement
-Group9.classLocationsFile = data/FMI/building_paths.wkt
-Group9.nodeLocation = 405, 570
-Group9.routeType = 1
-Group9.router = PassiveRouter
-
-#Seminar-Room-9
-Group10.groupID = lr
-Group10.nrofHosts = 1
-Group10.nrofInterfaces = 1
-Group10.interface1 = lectureRoomInterface
-Group10.movementModel = StationaryMovement
-Group10.classLocationsFile = data/FMI/building_paths.wkt
-Group10.nodeLocation = 345, 545
-Group10.routeType = 1
-Group10.router = PassiveRouter
-
-#Seminar-Room-10
-Group11.groupID = lr
-Group11.nrofHosts = 1
-Group11.nrofInterfaces = 1
-Group11.interface1 = lectureRoomInterface
-Group11.movementModel = StationaryMovement
-Group11.classLocationsFile = data/FMI/building_paths.wkt
-Group11.nodeLocation = 285, 515
-Group11.routeType = 1
-Group11.router = PassiveRouter
+Group3.movementModel = SeminarMovement
+Group3.seminarLocationsFile = data/FMI/seminar.wkt
 
 #Library
-Group12.groupID = lb
-Group12.nrofHosts = 1
-Group12.nrofInterfaces = 1
-Group12.interface1 = libraryInterface
-Group12.movementModel = StationaryMovement
-Group12.classLocationsFile = data/FMI/building_paths.wkt
-Group12.nodeLocation = 220, 430
-Group12.routeType = 1
-Group12.router = PassiveRouter
+Group4.groupID = lb
+Group4.nrofHosts = 1
+Group4.nrofInterfaces = 1
+Group4.interface1 = libraryInterface
+Group4.movementModel = LibraryMovement
+Group4.libraryLocationsFile = data/FMI/library.wkt
 
 #LectureHall
-Group13.groupID = lh
-Group13.nrofHosts = 1
-Group13.nrofInterfaces = 1
-Group13.interface1 = lectureHallInterface
-Group13.movementModel = StationaryMovement
-Group13.classLocationsFile = data/FMI/building_paths.wkt
-Group13.nodeLocation = 550, 440
-Group13.routeType = 1
-Group13.router = PassiveRouter
+Group5.groupID = lh
+Group5.nrofHosts = 1
+Group5.nrofInterfaces = 1
+Group5.interface1 = lectureHallInterface
+Group5.movementModel = LectureMovement
+Group5.lectureLocationsFile = data/FMI/lecture.wkt
 
-
+##########################
+### Network Interfaces ###
 studentMaskInterface.type = SimpleBroadcastInterface
 studentMaskInterface.transmitRange = 10
 studentMaskInterface.transmitSpeed = 250k
 studentMaskInterface.rangeColor = green
+studentMaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
 
 studentUnmaskInterface.type = SimpleBroadcastInterface
 studentUnmaskInterface.transmitRange = 10
 studentUnmaskInterface.transmitSpeed = 250k
 studentUnmaskInterface.rangeColor = yellow
+studentUnmaskInterface.ubahnLocation = 970.2162664500242 749.1789063707361
 
 studentInfectedInterface.type = SimpleBroadcastInterface
 studentInfectedInterface.transmitRange = 10
 studentInfectedInterface.transmitSpeed = 250k
 studentInfectedInterface.rangeColor = red
+studentInfectedInterface.ubahnLocation = 970.2162664500242 749.1789063707361
 
 lectureRoomInterface.type = SimpleBroadcastInterface
 lectureRoomInterface.transmitRange = 20
 lectureRoomInterface.transmitSpeed = 250k
+lectureRoomInterface.rangeColor = cyan
+
 
 libraryInterface.type = SimpleBroadcastInterface
 libraryInterface.transmitRange = 40
 libraryInterface.transmitSpeed = 250k
+libraryInterface.rangeColor = cyan
 
 lectureHallInterface.type = SimpleBroadcastInterface
 lectureHallInterface.transmitRange = 40
 lectureHallInterface.transmitSpeed = 250k
+lectureHallInterface.rangeColor = cyan
 
-
-
-MapBasedMovement.nrofMapFiles = 3
-Group1.routeFile = data/FMI/movement_path.wkt
-Group14.routeFile = data/FMI/movement_path.wkt
-MapBasedMovement.mapFile1 = data/FMI/fmi_building.wkt
-MapBasedMovement.mapFile2 = data/FMI/movement_path.wkt
-MapBasedMovement.mapFile3 = data/FMI/building_paths.wkt
-
-
-
-
-
+# Values that are not used but need
+lectureRoomInterface.transmitSpeeds = 1
+lectureRoomInterface.interfaceType = stationary
+libraryInterface.transmitSpeeds = 1
+libraryInterface.interfaceType = stationary
+lectureHallInterface.transmitSpeeds = 1
+lectureHallInterface.interfaceType = stationary
 
 ## GUI settings
 
@@ -211,3 +174,4 @@ GUI.UnderlayImage.offset = 0, 0
 GUI.UnderlayImage.scale = 1
 # Image rotation (radians)
 GUI.UnderlayImage.rotate = 0.015
+

@@ -321,6 +321,10 @@ public class SimScenario implements Serializable {
 	protected void createHosts() {
 		this.hosts = new ArrayList<DTNHost>();
 
+		/**--------------------------TEST--------------------------**/
+		System.out.println("nrofGroups");
+		System.out.println(nrofGroups);
+
 		for (int i=1; i<=nrofGroups; i++) {
 			List<NetworkInterface> interfaces =
 				new ArrayList<NetworkInterface>();
