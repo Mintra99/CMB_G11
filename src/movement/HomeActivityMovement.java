@@ -31,7 +31,7 @@ public class HomeActivityMovement extends MapBasedMovement
 	private static final int AT_HOME_MODE = 1;
 	private static final int READY_MODE = 2;
 
-	private static final int DAY_LENGTH = 86000;
+	private static final int DAY_LENGTH = 21000;
 
 	public static final String HOME_LOCATIONS_FILE_SETTING = "homeLocationsFile";
 

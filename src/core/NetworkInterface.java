@@ -114,7 +114,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 		if (s.contains(RANGE_COLOR)) {
 			String t = s.getSetting(RANGE_COLOR);
-			System.out.println(t);
 			if (t.equals("red"))
 				this.rangeColor = Color.RED;
 			if (t.equals("blue"))
@@ -192,6 +191,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		} else {
 			optimizer = null;
 		}
+		this.rangeColor = host.color;
 	}
 
 	/**
