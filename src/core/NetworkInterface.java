@@ -85,6 +85,8 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 	private int type = -1;
 
+	private int tick = 0;
+
 
 
 
@@ -351,15 +353,38 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	 * @param anotherInterface The interface to connect to
 	 */
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
-		this.connections.add(con);
-		notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+		Random rng = new Random();
+		String name = String.valueOf(host);
+		System.out.println(rng.nextDouble());
+		tick += 1;
 
-		// set up bidirectional connection
-		anotherInterface.getConnections().add(con);
+		if (name.contains("mask")){
+			if (rng.nextDouble()<0.1 && tick%1000==0){
+				this.connections.add(con);
 
-		// inform routers about the connection
-		this.host.connectionUp(con);
-		anotherInterface.getHost().connectionUp(con);
+				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+
+				// set up bidirectional connection
+				anotherInterface.getConnections().add(con);
+
+				// inform routers about the connection
+				this.host.connectionUp(con);
+				anotherInterface.getHost().connectionUp(con);
+			}
+		} else {
+			if (rng.nextDouble()<0.25 && tick%1000==0){
+				this.connections.add(con);
+
+				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+
+				// set up bidirectional connection
+				anotherInterface.getConnections().add(con);
+
+				// inform routers about the connection
+				this.host.connectionUp(con);
+				anotherInterface.getHost().connectionUp(con);
+			}
+		}
 	}
 
 	/**
