@@ -1,11 +1,11 @@
 ## GENERAL #########################################################
 Scenario.name = FMI-Virus-Spread
-Scenario.endTime = 430k
+Scenario.endTime = 604800
 Scenario.updateInterval = 1
 Scenario.simulateConnections = true
 Scenario.nrofHostGroups = 16
 
-MovementModel.rngSeed = 6
+MovementModel.rngSeed = 5
 MovementModel.worldSize = 1000, 1000
 
 MapBasedMovement.nrofMapFiles = 3
@@ -19,7 +19,7 @@ Report.nrofReports = 0
 ## EVENTS ##########################################################
 Events.nrof = 1
 Events1.class = SingleMessageGenerator
-Events1.interval = 43k, 43k
+Events1.interval = 604800, 604800
 Events1.size = 5k
 Events1.hosts = 0, 2
 Events1.prefix = M
@@ -41,13 +41,13 @@ Group.busControlSystemNr = 1
 # STUDENTMOVEMENT SETTINGS
 Group.nrOfOffices = 12
 Group.workDayLength = 7200
-Group.keepStudyingProb = 0.5
+Group.keepStudyingProb = 0.7
 
 Group.officeWaitTimeParetoCoeff = 0.5
 Group.officeMinWaitTime = 10
 Group.officeMaxWaitTime = 100
 Group.officeSize = 10
-Group.timeDiffSTD = 100
+Group.timeDiffSTD = 360
 Group.officeLocationsFile = data/FMI/rooms.wkt
 Group.homeLocationsFile = data/FMI/home_location.wkt
 

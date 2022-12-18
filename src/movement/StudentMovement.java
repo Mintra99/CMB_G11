@@ -6,6 +6,7 @@ package movement;
 
 import core.Coord;
 import core.Settings;
+import core.SimClock;
 
 /**
  *
@@ -69,7 +70,8 @@ public class StudentMovement extends ExtendedMovementModel {
         switch (mode) {
             case WORK_MODE:
                 if (workerMM.isReady()) {
-                    if (rng.nextDouble() < ksprob){
+                    if ((rng.nextDouble() < ksprob) && (SimClock.getTime() % 86400) < 648000){
+                        setCurrentMovementModel(workerMM);
                         mode = WORK_MODE;
                         break;
                     }

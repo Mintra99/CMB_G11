@@ -31,7 +31,7 @@ public class HomeActivityMovement extends MapBasedMovement
 	private static final int AT_HOME_MODE = 1;
 	private static final int READY_MODE = 2;
 
-	private static final int DAY_LENGTH = 21000;
+	private static final int DAY_LENGTH = 43200;
 
 	public static final String HOME_LOCATIONS_FILE_SETTING = "homeLocationsFile";
 
@@ -205,8 +205,10 @@ public class HomeActivityMovement extends MapBasedMovement
 	@Override
 	protected double generateWaitTime() {
 		if (mode == AT_HOME_MODE) {
-			return DAY_LENGTH - ((SimClock.getIntTime() + DAY_LENGTH +
-					timeDifference) % DAY_LENGTH);
+			if ((SimClock.getIntTime()) % DAY_LENGTH < 25200){
+				return 25200 - timeDifference + (SimClock.getIntTime()) % DAY_LENGTH;
+			} else
+				return 25200 + DAY_LENGTH + timeDifference - (SimClock.getIntTime()) % DAY_LENGTH;
 		} else {
 			return 0;
 		}

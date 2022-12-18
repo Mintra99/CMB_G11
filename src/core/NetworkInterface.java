@@ -172,6 +172,9 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.host = host;
 		ModuleCommunicationBus comBus = host.getComBus();
 
+		if (host.groupId.equals("LIBRARY") || host.groupId.equals("LECTUREHALL")){
+			this.transmitRange = 30;
+		}
 		if (!comBus.containsProperty(SCAN_INTERVAL_ID) &&
 		    !comBus.containsProperty(RANGE_ID)) {
 			/* add properties and subscriptions only for the 1st interface */

@@ -83,7 +83,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	public static final double ZOOM_MAX = 10;
 
 	/** index of initial update speed setting */
-	public static final int INITIAL_SPEED_SELECTION = 3;
+	public static final int INITIAL_SPEED_SELECTION = 5;
 	/** index of FFW speed setting */
 	public static final int FFW_SPEED_INDEX = 7;
 
@@ -97,7 +97,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	private double lastSimTime;
 	private double playUntilTime;
 
-	private boolean useHourDisplay = false;
+	private boolean useHourDisplay = true;
 
 	public GUIControls(DTNSimGUI gui, PlayField pf) {
 		/* TODO: read values for paused, isFfw etc from a file */
@@ -116,8 +116,8 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	 */
 	private void initPanel() {
 		this.setLayout(new FlowLayout());
-		this.simTimeField = new JTextField("0.0");
-		this.simTimeField.setColumns(6);
+		this.simTimeField = new JTextField("Day 00 00:00");
+		this.simTimeField.setColumns(8);
 		this.simTimeField.setEditable(false);
 		this.simTimeField.setToolTipText(TEXT_SIMTIME);
 		this.simTimeField.addMouseListener(new MouseAdapter(){
@@ -197,13 +197,15 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 			this.lastSimTime = time;
 			this.lastUpdate = System.currentTimeMillis();
 		}
-
+		if (time > 24500 && time < 25000) {
+			guiUpdateChooser.setSelectedIndex(4);
+		}
 		if (this.useHourDisplay) {
 			int hours = (int)(time / 3600);
 			int mins = (int)((time - hours * 3600) / 60);
-			double secs = time % 60;
-			this.simTimeField.setText(String.format("%02d:%02d:%02.1f",
-					hours, mins, secs));
+			int days = hours / 24;
+			this.simTimeField.setText(String.format("Day %02d %02d:%02d",
+					days, hours%24, mins));
 		} else {
 			this.simTimeField.setText(String.format("%.1f", time));
 		}
