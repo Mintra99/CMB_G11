@@ -85,9 +85,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 	private int type = -1;
 
-	private int tick = 0;
-
-
 
 
 	static {
@@ -354,11 +351,11 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	 */
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
 		Random rng = new Random();
-		String name = String.valueOf(host);
-		tick += 1;
+		String name = String.valueOf(host).toLowerCase();
+		Integer secMod = 300*6;
 
 		if (name.contains("mask")){
-			if (rng.nextDouble()<0.1 && tick%1000==0){
+			if (rng.nextDouble()<0.25 && SimClock.getTime()%secMod==0){
 				this.connections.add(con);
 
 				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
@@ -371,7 +368,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 				anotherInterface.getHost().connectionUp(con);
 			}
 		} else {
-			if (rng.nextDouble()<0.25 && tick%1000==0){
+			if (rng.nextDouble()<0.5 && SimClock.getTime()%secMod==0){
 				this.connections.add(con);
 
 				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
