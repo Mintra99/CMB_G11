@@ -32,7 +32,7 @@ studentMaskInterface.transmitSpeed = 250k
 ## GLOBAL SETTINGS #################################################
 Group.router = EpidemicRouter
 Group.interface1 = studentMaskInterface
-Group.speed = 0.3, 1.0
+Group.speed = 0.6, 2.0
 Group.nrofInterfaces = 1
 Group.nrofHosts = 1
 Group.rangeColor = blue
@@ -75,62 +75,62 @@ Group3.homeLocationsFile = data/FMI/home_location3.wkt
 #Seminar-Room-1
 Group4.groupID = SEMINAR
 Group4.movementModel = StationaryMovement
-Group4.nodeLocation = 220, 220
+Group4.nodeLocation = 314, 464
 
 #Seminar-Room-2
 Group5.groupID = SEMINAR
 Group5.movementModel = StationaryMovement
-Group5.nodeLocation = 288, 230
+Group5.nodeLocation = 382, 474
 
 #Seminar-Room-3
 Group6.groupID = SEMINAR
 Group6.movementModel = StationaryMovement
-Group6.nodeLocation = 353, 250
+Group6.nodeLocation = 447, 494
 
 #Seminar-Room-4
 Group7.groupID = SEMINAR
 Group7.movementModel = StationaryMovement
-Group7.nodeLocation = 418, 260
+Group7.nodeLocation = 512, 504
 
 #Seminar-Room-5
 Group8.groupID = SEMINAR
 Group8.movementModel = StationaryMovement
-Group8.nodeLocation = 489, 275
+Group8.nodeLocation = 583, 519
 
 #Seminar-Room-6
 Group9.groupID = SEMINAR
 Group9.movementModel = StationaryMovement
-Group9.nodeLocation = 528, 605
+Group9.nodeLocation = 622, 849
 
 #Seminar-Room-7
 Group10.groupID = SEMINAR
 Group10.movementModel = StationaryMovement
-Group10.nodeLocation = 465, 592
+Group10.nodeLocation = 559, 836
 
 #Seminar-Room-8
 Group11.groupID = SEMINAR
 Group11.movementModel = StationaryMovement
-Group11.nodeLocation = 405, 570
+Group11.nodeLocation = 499, 814
 
 #Seminar-Room-9
 Group12.groupID = SEMINAR
 Group12.movementModel = StationaryMovement
-Group12.nodeLocation = 345, 545
+Group12.nodeLocation = 439, 789
 
 #Seminar-Room-10
 Group13.groupID = SEMINAR
 Group13.movementModel = StationaryMovement
-Group13.nodeLocation = 285, 515
+Group13.nodeLocation = 379, 759
 
 #Library
 Group14.groupID = LIBRARY
 Group14.movementModel = StationaryMovement
-Group14.nodeLocation = 220, 430
+Group14.nodeLocation = 314, 674
 
 #LectureHall
 Group15.groupID = LECTUREHALL
 Group15.movementModel = StationaryMovement
-Group15.nodeLocation = 550, 440
+Group15.nodeLocation = 648, 684
 
 #U-bahn
 Group16.groupID = U-BAHN
