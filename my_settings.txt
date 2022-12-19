@@ -6,7 +6,7 @@ Scenario.simulateConnections = true
 Scenario.nrofHostGroups = 16
 
 MovementModel.rngSeed = 5
-MovementModel.worldSize = 1000, 1000
+MovementModel.worldSize = 2000, 2000
 
 MapBasedMovement.nrofMapFiles = 3
 MapBasedMovement.mapFile1 = data/FMI/movement_path.wkt
@@ -49,26 +49,28 @@ Group.officeMaxWaitTime = 100
 Group.officeSize = 10
 Group.timeDiffSTD = 360
 Group.officeLocationsFile = data/FMI/rooms.wkt
-Group.homeLocationsFile = data/FMI/home_location.wkt
 
 ## GROUPS ##########################################################
 #Student-Group-1
 Group1.groupID = GROUP_A
-Group1.nrofHosts = 5
+Group1.nrofHosts = 30
 Group1.movementModel = StudentMovement
 Group1.rangeColor = green
+Group1.homeLocationsFile = data/FMI/home_location1.wkt
 
 #Student-Group-2
 Group2.groupID = GROUP_B
-Group2.nrofHosts = 5
+Group2.nrofHosts = 20
 Group2.movementModel = StudentMovement
 Group2.rangeColor = yellow
+Group2.homeLocationsFile = data/FMI/home_location2.wkt
 
 #Student-Group-3
 Group3.groupID = GROUP_C
-Group3.nrofHosts = 5
+Group3.nrofHosts = 10
 Group3.movementModel = StudentMovement
 Group3.rangeColor = orange
+Group3.homeLocationsFile = data/FMI/home_location3.wkt
 
 #Seminar-Room-1
 Group4.groupID = SEMINAR
@@ -136,7 +138,7 @@ Group16.speed = 3, 3
 Group16.waitTime = 560, 640
 Group16.movementModel = BusMovement
 Group16.routeFile = data/FMI/ubahn.wkt
-Group16.routeType = 2
+Group16.routeType = 1
 
 ## GUI SETTINGS ####################################################
 GUI.UnderlayImage.fileName = data/FMI/FMI_building.png

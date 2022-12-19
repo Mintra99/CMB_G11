@@ -355,7 +355,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
 		Random rng = new Random();
 		String name = String.valueOf(host);
-		System.out.println(rng.nextDouble());
 		tick += 1;
 
 		if (name.contains("mask")){
