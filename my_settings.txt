@@ -42,12 +42,14 @@ Group.busControlSystemNr = 1
 Group.nrOfOffices = 12
 Group.workDayLength = 7200
 Group.keepStudyingProb = 0.7
+Group.dayStart = 32400
+Group.dayEnd = 64800
 
 Group.officeWaitTimeParetoCoeff = 0.5
 Group.officeMinWaitTime = 10
 Group.officeMaxWaitTime = 100
 Group.officeSize = 10
-Group.timeDiffSTD = 360
+Group.timeDiffSTD = 1000
 Group.officeLocationsFile = data/FMI/rooms.wkt
 
 ## GROUPS ##########################################################

@@ -24,11 +24,13 @@ public class StudentMovement extends ExtendedMovementModel {
     private HomeActivityMovement homeMM;
     private TransportMovement movementUsedForTransfers;
     private static final String KEEP_STUDYING_PROB = "keepStudyingProb";
+    private static final String DAY_END = "dayEnd";
     private static final int BUS_TO_WORK_MODE = 0;
     private static final int BUS_TO_HOME_MODE = 1;
     private static final int WORK_MODE = 3;
     private static final int HOME_MODE = 4;
     private double ksprob = 0;
+    private int dayend = 64800;
     private int mode;
 
 
@@ -47,6 +49,9 @@ public class StudentMovement extends ExtendedMovementModel {
         if (settings.contains("keepStudyingProb")){
             ksprob = settings.getDouble(KEEP_STUDYING_PROB);
         }
+        if (settings.contains("dayEnd")){
+            dayend = settings.getInt(DAY_END);
+        }
     }
 
     /**
@@ -62,7 +67,7 @@ public class StudentMovement extends ExtendedMovementModel {
         setCurrentMovementModel(homeMM);
         mode = proto.mode;
         ksprob = proto.ksprob;
-
+        dayend = proto.dayend;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class StudentMovement extends ExtendedMovementModel {
         switch (mode) {
             case WORK_MODE:
                 if (workerMM.isReady()) {
-                    if ((rng.nextDouble() < ksprob) && (SimClock.getTime() % 86400) < 648000){
+                    if ((rng.nextDouble() < ksprob) && (SimClock.getTime() % 86400) < dayend){
                         setCurrentMovementModel(workerMM);
                         mode = WORK_MODE;
                         break;
