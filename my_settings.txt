@@ -163,6 +163,30 @@ Group19.movementModel = BusMovement
 Group19.routeFile = data/FMI/ubahn.wkt
 Group19.routeType = 1
 
+
+
+TotalContactTimeReport.granularity = 1000
+NodeDensityReport.sampleInterval = 10
+NodeDensityReport.xCount = 90
+NodeDensityReport.yCount = 90
+NodeDensityReport.outputGnuplot = true
+NodeDensityReport.onlyAverage = true
+
+#############
+## Reports ##
+Report.nrofReports = 1
+# Directory where reports would be created
+Report.reportDir = reports/Assignment-1
+# Report classes to load
+Report.report1 = VirusTransmissionReport
+
+TotalContactTimeReport.granularity = 1000
+NodeDensityReport.sampleInterval = 10
+NodeDensityReport.xCount = 90
+NodeDensityReport.yCount = 90
+NodeDensityReport.outputGnuplot = true
+NodeDensityReport.onlyAverage = true
+
 ## GUI SETTINGS ####################################################
 GUI.UnderlayImage.fileName = data/FMI/FMI_building.png
 GUI.UnderlayImage.offset = 0, 0

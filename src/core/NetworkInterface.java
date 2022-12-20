@@ -352,7 +352,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
 		Random rng = new Random();
 		String name = String.valueOf(host).toLowerCase();
-		Integer secMod = 300*6;
+		Integer secMod = 300*6; // 30 min
 
 		if (name.contains("mask")){
 			if (rng.nextDouble()<0.25 && SimClock.getTime()%secMod==0){
