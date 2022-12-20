@@ -37,6 +37,7 @@ Group.nrofInterfaces = 1
 Group.nrofHosts = 1
 Group.rangeColor = blue
 Group.busControlSystemNr = 1
+Group.getVirusProbability = 0.05
 
 # STUDENTMOVEMENT SETTINGS
 Group.nrOfOffices = 12
@@ -49,7 +50,7 @@ Group.officeWaitTimeParetoCoeff = 0.5
 Group.officeMinWaitTime = 10
 Group.officeMaxWaitTime = 100
 Group.officeSize = 10
-Group.timeDiffSTD = 1000
+Group.timeDiffSTD = 2000
 Group.officeLocationsFile = data/FMI/rooms.wkt
 
 ## GROUPS ##########################################################
@@ -66,6 +67,7 @@ Group2.nrofHosts = 10
 Group2.movementModel = StudentMovement
 Group2.rangeColor = green
 Group2.homeLocationsFile = data/FMI/home_location1.wkt
+Group2.getVirusProbability = 0.005
 
 #Student-Group-3
 Group3.groupID = ST
@@ -80,6 +82,7 @@ Group4.nrofHosts = 5
 Group4.movementModel = StudentMovement
 Group4.rangeColor = green
 Group4.homeLocationsFile = data/FMI/home_location2.wkt
+Group4.getVirusProbability = 0.005
 
 #Student-Group-5
 Group5.groupID = ST
@@ -94,6 +97,7 @@ Group6.nrofHosts = 5
 Group6.movementModel = StudentMovement
 Group6.rangeColor = green
 Group6.homeLocationsFile = data/FMI/home_location3.wkt
+Group6.getVirusProbability = 0.005
 
 #Seminar-Room-1
 Group7.groupID = SEMINAR

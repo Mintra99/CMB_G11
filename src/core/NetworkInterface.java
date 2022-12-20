@@ -351,35 +351,19 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	 */
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
 		Random rng = new Random();
-		String name = String.valueOf(host).toLowerCase();
-		Integer secMod = 300*6;
+		int secMod = 60*30;
+		double prob = host.getVirusProbability();
+		if (rng.nextDouble() < prob && SimClock.getIntTime()%secMod==0){
+			this.connections.add(con);
 
-		if (name.contains("mask")){
-			if (rng.nextDouble()<0.25 && SimClock.getTime()%secMod==0){
-				this.connections.add(con);
+			notifyConnectionListeners(CON_UP, anotherInterface.getHost());
 
-				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+			// set up bidirectional connection
+			anotherInterface.getConnections().add(con);
 
-				// set up bidirectional connection
-				anotherInterface.getConnections().add(con);
-
-				// inform routers about the connection
-				this.host.connectionUp(con);
-				anotherInterface.getHost().connectionUp(con);
-			}
-		} else {
-			if (rng.nextDouble()<0.5 && SimClock.getTime()%secMod==0){
-				this.connections.add(con);
-
-				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
-
-				// set up bidirectional connection
-				anotherInterface.getConnections().add(con);
-
-				// inform routers about the connection
-				this.host.connectionUp(con);
-				anotherInterface.getHost().connectionUp(con);
-			}
+			// inform routers about the connection
+			this.host.connectionUp(con);
+			anotherInterface.getHost().connectionUp(con);
 		}
 	}
 

@@ -29,6 +29,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	private MessageRouter router;
 	private MovementModel movement;
 	private Path path;
+	private double probability;
 	private double speed;
 	private double nextTimeToMove;
 	public final String groupId;
@@ -38,9 +39,9 @@ public class DTNHost implements Comparable<DTNHost> {
 	private List<NetworkInterface> net;
 	private ModuleCommunicationBus comBus;
 
-	private double halfDaySec = 129600; // in seconds
+	private double halfDaySec = 3600; // in seconds
 
-	private double firstMessageTime = -1;
+	private double firstMessageTime = 1000;
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -61,7 +62,7 @@ public class DTNHost implements Comparable<DTNHost> {
 			String groupId, List<NetworkInterface> interf,
 			ModuleCommunicationBus comBus,
 			MovementModel mmProto, MessageRouter mRouterProto,
-				   Color rangeColor) {
+		    Color rangeColor, double getVirusProbability) {
 		this.comBus = comBus;
 		this.location = new Coord(0,0);
 		this.address = getNextAddress();
@@ -69,6 +70,7 @@ public class DTNHost implements Comparable<DTNHost> {
 		this.name = groupId+address;
 		this.net = new ArrayList<NetworkInterface>();
 		this.color = rangeColor;
+		this.probability = getVirusProbability;
 
 		for (NetworkInterface i : interf) {
 			NetworkInterface ni = i.replicate();
@@ -561,6 +563,9 @@ public class DTNHost implements Comparable<DTNHost> {
 	public boolean isIncubated() {
 		return this.firstMessageTime != -1
 				&& this.firstMessageTime + this.halfDaySec > SimClock.getIntTime();
+	}
+	public double getVirusProbability() {
+		return this.probability;
 	}
 
 }
