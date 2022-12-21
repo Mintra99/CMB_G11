@@ -87,7 +87,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 
 
-
 	static {
 		DTNSim.registerForReset(NetworkInterface.class.getCanonicalName());
 		reset();
@@ -114,7 +113,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 		if (s.contains(RANGE_COLOR)) {
 			String t = s.getSetting(RANGE_COLOR);
-			System.out.println(t);
 			if (t.equals("red"))
 				this.rangeColor = Color.RED;
 			if (t.equals("blue"))
@@ -173,6 +171,9 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.host = host;
 		ModuleCommunicationBus comBus = host.getComBus();
 
+		if (host.groupId.equals("LIBRARY") || host.groupId.equals("LECTUREHALL")){
+			this.transmitRange = 30;
+		}
 		if (!comBus.containsProperty(SCAN_INTERVAL_ID) &&
 		    !comBus.containsProperty(RANGE_ID)) {
 			/* add properties and subscriptions only for the 1st interface */
@@ -192,6 +193,7 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		} else {
 			optimizer = null;
 		}
+		this.rangeColor = host.color;
 	}
 
 	/**
@@ -348,15 +350,37 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 	 * @param anotherInterface The interface to connect to
 	 */
 	protected void connect(Connection con, NetworkInterface anotherInterface) {
-		this.connections.add(con);
-		notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+		Random rng = new Random();
+		String name = String.valueOf(host).toLowerCase();
+		Integer secMod = 300*6; // 30 min
 
-		// set up bidirectional connection
-		anotherInterface.getConnections().add(con);
+		if (name.contains("mask")){
+			if (rng.nextDouble()<0.25 && SimClock.getTime()%secMod==0){
+				this.connections.add(con);
 
-		// inform routers about the connection
-		this.host.connectionUp(con);
-		anotherInterface.getHost().connectionUp(con);
+				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+
+				// set up bidirectional connection
+				anotherInterface.getConnections().add(con);
+
+				// inform routers about the connection
+				this.host.connectionUp(con);
+				anotherInterface.getHost().connectionUp(con);
+			}
+		} else {
+			if (rng.nextDouble()<0.5 && SimClock.getTime()%secMod==0){
+				this.connections.add(con);
+
+				notifyConnectionListeners(CON_UP, anotherInterface.getHost());
+
+				// set up bidirectional connection
+				anotherInterface.getConnections().add(con);
+
+				// inform routers about the connection
+				this.host.connectionUp(con);
+				anotherInterface.getHost().connectionUp(con);
+			}
+		}
 	}
 
 	/**

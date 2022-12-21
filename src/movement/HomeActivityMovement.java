@@ -30,13 +30,12 @@ public class HomeActivityMovement extends MapBasedMovement
 	private static final int WALKING_HOME_MODE = 0;
 	private static final int AT_HOME_MODE = 1;
 	private static final int READY_MODE = 2;
-
-	private static final int DAY_LENGTH = 86000;
+	private static final int DAY_LENGTH = 86400;
 
 	public static final String HOME_LOCATIONS_FILE_SETTING = "homeLocationsFile";
-
+	private static final String DAY_START = "dayStart";
 	public static final String STD_FOR_TIME_DIFF_SETTING = "timeDiffSTD";
-
+	private int daystart = 32400;
 	private int mode;
 	private DijkstraPathFinder pathFinder;
 
@@ -60,6 +59,9 @@ public class HomeActivityMovement extends MapBasedMovement
 		pathFinder = new DijkstraPathFinder(null);
 		mode = WALKING_HOME_MODE;
 
+		if (settings.contains("dayStart")){
+			daystart = settings.getInt(DAY_START);
+		}
 		String homeLocationsFile = null;
 		try {
 			homeLocationsFile = settings.getSetting(HOME_LOCATIONS_FILE_SETTING);
@@ -119,7 +121,7 @@ public class HomeActivityMovement extends MapBasedMovement
 		this.distance = proto.distance;
 		this.pathFinder = proto.pathFinder;
 		this.mode = proto.mode;
-
+		this.daystart = proto.daystart;
 		this.timeDiffSTD = proto.timeDiffSTD;
 
 		if (proto.allHomes == null) {
@@ -204,12 +206,14 @@ public class HomeActivityMovement extends MapBasedMovement
 
 	@Override
 	protected double generateWaitTime() {
+		int waitTime = 0;
 		if (mode == AT_HOME_MODE) {
-			return DAY_LENGTH - ((SimClock.getIntTime() + DAY_LENGTH +
-					timeDifference) % DAY_LENGTH);
-		} else {
-			return 0;
+			if ((SimClock.getIntTime()) % DAY_LENGTH < 32400){
+				waitTime = 32400 + timeDifference + (SimClock.getIntTime()) % DAY_LENGTH;
+			} else
+				waitTime = 32400 + timeDifference + DAY_LENGTH - (SimClock.getIntTime()) % DAY_LENGTH;
 		}
+		return waitTime;
 	}
 
 	@Override

@@ -4,6 +4,7 @@
  */
 package core;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +22,7 @@ import static core.Constants.DEBUG;
 public class DTNHost implements Comparable<DTNHost> {
 	private static int nextAddress = 0;
 	private int address;
-
+	public Color color;
 	private Coord location; 	// where is the host
 	private Coord destination;	// where is it going
 
@@ -30,6 +31,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	private Path path;
 	private double speed;
 	private double nextTimeToMove;
+	public final String groupId;
 	private String name;
 	private List<MessageListener> msgListeners;
 	private List<MovementListener> movListeners;
@@ -58,12 +60,15 @@ public class DTNHost implements Comparable<DTNHost> {
 			List<MovementListener> movLs,
 			String groupId, List<NetworkInterface> interf,
 			ModuleCommunicationBus comBus,
-			MovementModel mmProto, MessageRouter mRouterProto) {
+			MovementModel mmProto, MessageRouter mRouterProto,
+				   Color rangeColor) {
 		this.comBus = comBus;
 		this.location = new Coord(0,0);
 		this.address = getNextAddress();
+		this.groupId = groupId;
 		this.name = groupId+address;
 		this.net = new ArrayList<NetworkInterface>();
+		this.color = rangeColor;
 
 		for (NetworkInterface i : interf) {
 			NetworkInterface ni = i.replicate();
@@ -137,9 +142,6 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	private void setRouter(MessageRouter router) {
 		router.init(this, msgListeners);
-
-		System.out.println("HHHHHHHH");
-		System.out.println(msgListeners);
 		this.router = router;
 	}
 
@@ -225,6 +227,10 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	/**

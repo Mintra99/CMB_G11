@@ -8,11 +8,8 @@ import gui.playfield.PlayField;
 
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.event.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -35,7 +32,7 @@ import core.SimClock;
  * GUI's control panel
  *
  */
-public class GUIControls extends JPanel implements ActionListener, ChangeListener {
+public class GUIControls extends JPanel implements ActionListener, ChangeListener, MouseWheelListener {
 	private static final String PATH_GRAPHICS = "buttonGraphics/";
 	private static final String ICON_PAUSE = "Pause16.gif";
 	private static final String ICON_PLAY = "Play16.gif";
@@ -86,7 +83,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	public static final double ZOOM_MAX = 10;
 
 	/** index of initial update speed setting */
-	public static final int INITIAL_SPEED_SELECTION = 3;
+	public static final int INITIAL_SPEED_SELECTION = 5;
 	/** index of FFW speed setting */
 	public static final int FFW_SPEED_INDEX = 7;
 
@@ -100,7 +97,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	private double lastSimTime;
 	private double playUntilTime;
 
-	private boolean useHourDisplay = false;
+	private boolean useHourDisplay = true;
 
 	public GUIControls(DTNSimGUI gui, PlayField pf) {
 		/* TODO: read values for paused, isFfw etc from a file */
@@ -119,8 +116,8 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	 */
 	private void initPanel() {
 		this.setLayout(new FlowLayout());
-		this.simTimeField = new JTextField("0.0");
-		this.simTimeField.setColumns(6);
+		this.simTimeField = new JTextField("Day 00 00:00");
+		this.simTimeField.setColumns(8);
 		this.simTimeField.setEditable(false);
 		this.simTimeField.setToolTipText(TEXT_SIMTIME);
 		this.simTimeField.addMouseListener(new MouseAdapter(){
@@ -138,7 +135,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 		this.screenShotButton = new JButton(TEXT_SCREEN_SHOT);
 		this.guiUpdateChooser = new JComboBox(UP_SPEEDS);
 
-		this.zoomSelector = new JSpinner(new SpinnerNumberModel(1.0, ZOOM_MIN,
+		this.zoomSelector = new JSpinner(new SpinnerNumberModel(0.7, ZOOM_MIN,
 				ZOOM_MAX, 0.001));
 
 		this.add(simTimeField);
@@ -163,7 +160,9 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 		this.add(this.screenShotButton);
 
 		guiUpdateChooser.addActionListener(this);
+		guiUpdateChooser.addMouseWheelListener(this);
 		zoomSelector.addChangeListener(this);
+		zoomSelector.addMouseWheelListener(this);
 		this.screenShotButton.addActionListener(this);
 	}
 
@@ -198,13 +197,15 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 			this.lastSimTime = time;
 			this.lastUpdate = System.currentTimeMillis();
 		}
-
+		if (time > 24500 && time < 25000) {
+			guiUpdateChooser.setSelectedIndex(4);
+		}
 		if (this.useHourDisplay) {
 			int hours = (int)(time / 3600);
 			int mins = (int)((time - hours * 3600) / 60);
-			double secs = time % 60;
-			this.simTimeField.setText(String.format("%02d:%02d:%02.1f",
-					hours, mins, secs));
+			int days = hours / 24;
+			this.simTimeField.setText(String.format("Day %02d %02d:%02d",
+					days, hours%24, mins));
 		} else {
 			this.simTimeField.setText(String.format("%.1f", time));
 		}
@@ -289,7 +290,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 			(SpinnerNumberModel)this.zoomSelector.getModel();
 		double curZoom = model.getNumber().doubleValue();
 		Number newValue = new Double(curZoom + model.getStepSize().
-				doubleValue() * delta * curZoom * 100);
+				doubleValue() * delta * curZoom * -100);
 
 		if (newValue.doubleValue() < ZOOM_MIN) {
 			newValue = ZOOM_MIN;
@@ -394,4 +395,14 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 		}
 	}
 
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if(e.getSource() == guiUpdateChooser){
+			guiUpdateChooser.setSelectedIndex(Math.min(guiUpdateChooser.getItemCount()-1, Math.max(0,
+							guiUpdateChooser.getSelectedIndex() + (int) Math.signum(e.getWheelRotation()))));
+		}
+		else if(e.getSource() == zoomSelector){
+			changeZoom((pf.getZoomWheelInvert() ? -1 : 1) * e.getWheelRotation());
+		}
+	}
 }

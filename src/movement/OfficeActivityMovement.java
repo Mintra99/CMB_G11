@@ -222,13 +222,8 @@ public class OfficeActivityMovement extends MapBasedMovement implements
 			return path;
 		}
 		Coord c;
-		if (sittingAtDesk) {
-			c = getRandomCoorinateInsideOffice();
-			sittingAtDesk = false;
-		} else {
-			c = deskLocation.clone();
-			sittingAtDesk = true;
-		}
+		c = deskLocation.clone();
+		sittingAtDesk = true;
 
 		Path path =  new Path(1);
 		path.addWaypoint(c);
@@ -270,6 +265,13 @@ public class OfficeActivityMovement extends MapBasedMovement implements
 	 * @see SwitchableMovement
 	 */
 	public void setLocation(Coord lastWaypoint) {
+		officeLocation = allOffices.get(rng.nextInt(allOffices.size())).clone();
+		if (officeLocation.equals(allOffices.get(9).clone())){
+			distance = 50;
+		}
+		else
+			distance = 10;
+		deskLocation = getRandomCoorinateInsideOffice();
 		this.lastWaypoint = lastWaypoint.clone();
 		startedWorkingTime = -1;
 		ready = false;

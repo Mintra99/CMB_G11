@@ -17,7 +17,7 @@ import core.Coord;
  */
 public class MapGraphic extends PlayFieldGraphic {
 	private SimMap simMap;
-	private final Color PATH_COLOR = Color.LIGHT_GRAY;
+	private final Color PATH_COLOR = Color.BLACK;
 	private final Color BG_COLOR = Color.WHITE;
 
 	public MapGraphic(SimMap simMap) {
@@ -48,6 +48,13 @@ public class MapGraphic extends PlayFieldGraphic {
 						scale(c.getX()), scale(c.getY()));
 			}
 		}
+	}
+
+	/**
+	 * @return The simMap of the graphic
+	 */
+	public SimMap getMap(){
+		return simMap;
 	}
 
 }

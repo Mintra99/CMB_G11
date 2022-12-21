@@ -7,6 +7,7 @@ package core;
 import input.EventQueue;
 import input.EventQueueHandler;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class SimScenario implements Serializable {
 	/** setting name for the number of applications */
 	public static final String APPCOUNT_S = "nrofApplications";
 
+	public static final String RANGE_COLOR = "rangeColor";
 	/** namespace for host group settings ({@value})*/
 	public static final String GROUP_NS = "Group";
 	/** group id -setting id ({@value})*/
@@ -327,6 +329,29 @@ public class SimScenario implements Serializable {
 			Settings s = new Settings(GROUP_NS+i);
 			s.setSecondaryNamespace(GROUP_NS);
 			String gid = s.getSetting(GROUP_ID_S);
+
+			Color rc = Color.GREEN;
+			if (s.contains(RANGE_COLOR)) {
+				String color = s.getSetting(RANGE_COLOR);
+				switch (color) {
+					case "red":
+						rc = Color.RED;
+					break;
+					case "blue":
+						rc = Color.BLUE;
+					break;
+					case "yellow":
+						rc = Color.YELLOW;
+					break;
+					case "orange":
+						rc = Color.ORANGE;
+						break;
+					case "magenta":
+						rc = Color.MAGENTA;
+					break;
+				}
+			}
+
 			int nrofHosts = s.getInt(NROF_HOSTS_S);
 			int nrofInterfaces = s.getInt(NROF_INTERF_S);
 			int appCount;
@@ -397,7 +422,7 @@ public class SimScenario implements Serializable {
 				// new instances of movement model and message router
 				DTNHost host = new DTNHost(this.messageListeners,
 						this.movementListeners,	gid, interfaces, comBus,
-						mmProto, mRouterProto);
+						mmProto, mRouterProto, rc);
 				hosts.add(host);
 			}
 		}
