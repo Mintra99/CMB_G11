@@ -84,6 +84,8 @@ public class SimScenario implements Serializable {
 	/** package where to look for application classes */
 	private static final String APP_PACKAGE = "applications.";
 
+	private static final String GET_VIRUS_PROBABILITY = "getVirusProbability";
+	private double probability = 0.2;
 	/** The world instance */
 	private World world;
 	/** List of hosts in this simulation */
@@ -329,7 +331,9 @@ public class SimScenario implements Serializable {
 			Settings s = new Settings(GROUP_NS+i);
 			s.setSecondaryNamespace(GROUP_NS);
 			String gid = s.getSetting(GROUP_ID_S);
-
+			if (s.contains("getVirusProbability")){
+				this.probability = s.getDouble(GET_VIRUS_PROBABILITY);
+			}
 			Color rc = Color.GREEN;
 			if (s.contains(RANGE_COLOR)) {
 				String color = s.getSetting(RANGE_COLOR);
@@ -422,7 +426,7 @@ public class SimScenario implements Serializable {
 				// new instances of movement model and message router
 				DTNHost host = new DTNHost(this.messageListeners,
 						this.movementListeners,	gid, interfaces, comBus,
-						mmProto, mRouterProto, rc);
+						mmProto, mRouterProto, rc, probability);
 				hosts.add(host);
 			}
 		}
