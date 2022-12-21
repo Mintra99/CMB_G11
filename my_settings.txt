@@ -14,7 +14,9 @@ MapBasedMovement.mapFile2 = data/FMI/ubahn.wkt
 MapBasedMovement.mapFile3 = data/FMI/building_outline.wkt
 
 ## REPORT ##########################################################
-Report.nrofReports = 0
+Report.nrofReports = 1
+Report.reportDir = reports/Assignment-1
+Report.report1 = VirusTransmissionReport
 
 ## EVENTS ##########################################################
 Events.nrof = 1
@@ -37,7 +39,7 @@ Group.nrofInterfaces = 1
 Group.nrofHosts = 1
 Group.rangeColor = blue
 Group.busControlSystemNr = 1
-Group.getVirusProbability = 0.05
+Group.getVirusProbability = 0.01
 
 # STUDENTMOVEMENT SETTINGS
 Group.nrOfOffices = 12
